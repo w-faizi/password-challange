@@ -4,21 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Password Challenge">
-    <meta name="description" content="Progressive password building challenge game">
-    <meta name="keywords" content="password, game, challenge, security, mobile">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    
-    <!-- Icons for various devices -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#020617">
-    
     <title>Password Challenge</title>
     <style>
         * {
@@ -38,19 +23,6 @@
             padding: 16px;
             position: relative;
             overflow-x: hidden;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .password-input {
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
         }
 
         body::before {
@@ -69,65 +41,6 @@
             z-index: 1;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                max-width: 100%;
-                padding: 0 4px;
-            }
-            
-            h1 {
-                font-size: 1.875rem;
-                margin-bottom: 32px;
-            }
-            
-            .stats {
-                padding: 12px 16px;
-                margin-bottom: 20px;
-            }
-            
-            .stat-number {
-                font-size: 18px;
-            }
-            
-            .stat-label {
-                font-size: 12px;
-            }
-            
-            .requirement {
-                padding: 10px 14px;
-                font-size: 13px;
-                margin-bottom: 4px;
-            }
-            
-            .password-input {
-                font-size: 16px;
-                padding: 14px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-                margin-bottom: 24px;
-            }
-            
-            .stats {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
-            }
-            
-            .stat {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-
         h1 {
             text-align: center;
             color: white;
@@ -135,7 +48,6 @@
             font-size: 2.25rem;
             font-weight: 600;
             letter-spacing: -0.05em;
-            font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
             background: linear-gradient(135deg, #ffffff, #e4e4e7, #a1a1aa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -195,6 +107,7 @@
             transition: all 0.2s ease;
             font-size: 14px;
             font-weight: 400;
+            min-height: 44px;
         }
 
         .requirement.met {
@@ -243,7 +156,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #e1e5e9;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 20px;
@@ -251,7 +164,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.8), rgba(251, 191, 36, 0.8), rgba(34, 197, 94, 0.8));
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -262,12 +175,14 @@
             border-radius: 8px;
             margin-bottom: 20px;
             font-weight: 500;
+            display: none;
         }
 
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(34, 197, 94, 0.1);
+            color: rgba(34, 197, 94, 1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            display: block;
         }
 
         .reset-btn {
@@ -282,29 +197,86 @@
             font-size: 14px;
             font-weight: 500;
             transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            min-height: 44px;
+            min-width: 120px;
         }
 
-        .reset-btn:hover, .reset-btn:active {
+        .reset-btn:hover {
             background: rgba(255, 255, 255, 0.12);
             border-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-1px);
         }
 
-        /* Touch feedback */
-        .requirement, .password-input, .reset-btn {
-            -webkit-tap-highlight-color: transparent;
+        .credit {
+            text-align: center;
+            margin-top: 24px;
+            opacity: 0.4;
         }
 
-        /* Improve touch targets */
-        .requirement {
-            min-height: 44px;
+        .credit span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
         }
 
-        .reset-btn {
-            min-height: 44px;
-            min-width: 120px;
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0 4px;
+            }
+            
+            h1 {
+                font-size: 1.875rem;
+                margin-bottom: 32px;
+            }
+            
+            .stats {
+                padding: 12px 16px;
+                margin-bottom: 20px;
+            }
+            
+            .stat-number {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .requirement {
+                padding: 10px 14px;
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+            
+            .password-input {
+                font-size: 16px;
+                padding: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 24px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .stat {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -335,54 +307,68 @@
         
         <div class="requirements" id="requirements"></div>
         
-        <div class="message" id="message" style="display: none;"></div>
+        <div class="message" id="message"></div>
         
         <button class="reset-btn" onclick="resetGame()">Reset Game</button>
         
-        <div style="text-align: center; margin-top: 24px; opacity: 0.4;">
-            <span style="font-size: 12px; color: rgba(255, 255, 255, 0.6); font-weight: 400;">created by zishan</span>
+        <div class="credit">
+            <span>created by zishan</span>
         </div>
     </div>
 
     <script>
+        // Game state
         let currentLevel = 1;
         let password = '';
         
+        // Requirements array
         const requirements = [
             {
                 id: 'minLength',
                 text: 'Password must be at least 8 characters long',
-                check: (pwd) => pwd.length >= 8
+                check: function(pwd) {
+                    return pwd.length >= 8;
+                }
             },
             {
                 id: 'uppercase',
                 text: 'Password must contain an uppercase letter',
-                check: (pwd) => /[A-Z]/.test(pwd)
+                check: function(pwd) {
+                    return /[A-Z]/.test(pwd);
+                }
             },
             {
                 id: 'lowercase',
                 text: 'Password must contain a lowercase letter',
-                check: (pwd) => /[a-z]/.test(pwd)
+                check: function(pwd) {
+                    return /[a-z]/.test(pwd);
+                }
             },
             {
                 id: 'number',
                 text: 'Password must contain a number',
-                check: (pwd) => /[0-9]/.test(pwd)
+                check: function(pwd) {
+                    return /[0-9]/.test(pwd);
+                }
             },
             {
                 id: 'special',
                 text: 'Password must contain a special character (!@#$%^&*)',
-                check: (pwd) => /[!@#$%^&*]/.test(pwd)
+                check: function(pwd) {
+                    return /[!@#$%^&*]/.test(pwd);
+                }
             },
             {
                 id: 'noSequence',
                 text: 'Password must not contain 3 consecutive letters (abc, xyz, etc.)',
-                check: (pwd) => {
+                check: function(pwd) {
                     for (let i = 0; i < pwd.length - 2; i++) {
                         const char1 = pwd.charCodeAt(i);
                         const char2 = pwd.charCodeAt(i + 1);
                         const char3 = pwd.charCodeAt(i + 2);
-                        if (char2 === char1 + 1 && char3 === char2 + 1) return false;
+                        if (char2 === char1 + 1 && char3 === char2 + 1) {
+                            return false;
+                        }
                     }
                     return true;
                 }
@@ -390,45 +376,63 @@
             {
                 id: 'sumDigits',
                 text: 'The digits in your password must add up to 25',
-                check: (pwd) => {
+                check: function(pwd) {
                     const digits = pwd.match(/\d/g);
-                    if (!digits) return false;
-                    const sum = digits.reduce((acc, digit) => acc + parseInt(digit), 0);
+                    if (!digits || digits.length === 0) return false;
+                    const sum = digits.reduce(function(acc, digit) {
+                        return acc + parseInt(digit, 10);
+                    }, 0);
                     return sum === 25;
                 }
             },
             {
                 id: 'monthName',
                 text: 'Password must include the name of a month',
-                check: (pwd) => {
+                check: function(pwd) {
                     const months = ['january', 'february', 'march', 'april', 'may', 'june', 
                                   'july', 'august', 'september', 'october', 'november', 'december'];
-                    return months.some(month => pwd.toLowerCase().includes(month));
+                    const lowerPwd = pwd.toLowerCase();
+                    for (let i = 0; i < months.length; i++) {
+                        if (lowerPwd.includes(months[i])) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
             },
             {
                 id: 'romanNumeral',
                 text: 'Password must include a Roman numeral',
-                check: (pwd) => /[IVXLCDM]/.test(pwd.toUpperCase())
+                check: function(pwd) {
+                    return /[IVXLCDM]/.test(pwd.toUpperCase());
+                }
             },
             {
                 id: 'currentYear',
                 text: 'Password must include the current year (2025)',
-                check: (pwd) => pwd.includes('2025')
+                check: function(pwd) {
+                    return pwd.includes('2025');
+                }
             },
             {
                 id: 'emoji',
                 text: 'Password must contain an emoji 🔒',
-                check: (pwd) => /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(pwd)
+                check: function(pwd) {
+                    // Basic emoji detection
+                    return /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(pwd);
+                }
             },
             {
                 id: 'palindrome',
                 text: 'Password must contain a palindrome of at least 4 characters',
-                check: (pwd) => {
+                check: function(pwd) {
                     for (let i = 0; i < pwd.length - 3; i++) {
                         for (let j = i + 4; j <= pwd.length; j++) {
                             const substr = pwd.slice(i, j);
-                            if (substr === substr.split('').reverse().join('')) return true;
+                            const reversed = substr.split('').reverse().join('');
+                            if (substr === reversed) {
+                                return true;
+                            }
                         }
                     }
                     return false;
@@ -436,158 +440,123 @@
             }
         ];
 
+        // Update display function
         function updateDisplay() {
-            const input = document.getElementById('passwordInput');
-            password = input.value;
+            try {
+                const input = document.getElementById('passwordInput');
+                if (!input) return;
+                
+                password = input.value;
 
-            // Update length stat
-            document.getElementById('lengthStat').textContent = password.length;
-
-            // Calculate current requirements
-            const currentRequirements = requirements.slice(0, currentLevel);
-            let metCount = 0;
-
-            // Clear and rebuild requirements display
-            const requirementsDiv = document.getElementById('requirements');
-            requirementsDiv.innerHTML = '';
-
-            currentRequirements.forEach((req, index) => {
-                const isMet = req.check(password);
-                if (isMet) metCount++;
-
-                const reqDiv = document.createElement('div');
-                reqDiv.className = `requirement ${isMet ? 'met' : ''}`;
-                reqDiv.innerHTML = `
-                    <span class="requirement-icon">${isMet ? '✅' : '❌'}</span>
-                    <span class="requirement-text">${req.text}</span>
-                `;
-                requirementsDiv.appendChild(reqDiv);
-            });
-
-            // Update stats
-            document.getElementById('requirementsStat').textContent = `${metCount}/${currentLevel}`;
-            document.getElementById('levelStat').textContent = currentLevel;
-
-            // Update progress bar
-            const progress = (metCount / currentLevel) * 100;
-            document.getElementById('progressFill').style.width = `${progress}%`;
-
-            // Check if all current requirements are met
-            if (metCount === currentLevel) {
-                if (currentLevel < requirements.length) {
-                    setTimeout(() => {
-                        currentLevel++;
-                        showMessage(`Level ${currentLevel}! New requirement added!`, 'success');
-                        updateDisplay();
-                    }, 500);
-                } else {
-                    showMessage('🎉 Congratulations! You\'ve completed the Password Challenge!', 'success');
+                // Update length stat
+                const lengthStat = document.getElementById('lengthStat');
+                if (lengthStat) {
+                    lengthStat.textContent = password.length;
                 }
+
+                // Calculate current requirements
+                const currentRequirements = requirements.slice(0, currentLevel);
+                let metCount = 0;
+
+                // Clear and rebuild requirements display
+                const requirementsDiv = document.getElementById('requirements');
+                if (requirementsDiv) {
+                    requirementsDiv.innerHTML = '';
+
+                    for (let i = 0; i < currentRequirements.length; i++) {
+                        const req = currentRequirements[i];
+                        const isMet = req.check(password);
+                        if (isMet) metCount++;
+
+                        const reqDiv = document.createElement('div');
+                        reqDiv.className = 'requirement' + (isMet ? ' met' : '');
+                        reqDiv.innerHTML = '<span class="requirement-icon">' + (isMet ? '✅' : '❌') + '</span>' +
+                                          '<span class="requirement-text">' + req.text + '</span>';
+                        requirementsDiv.appendChild(reqDiv);
+                    }
+                }
+
+                // Update stats
+                const requirementsStat = document.getElementById('requirementsStat');
+                if (requirementsStat) {
+                    requirementsStat.textContent = metCount + '/' + currentLevel;
+                }
+                
+                const levelStat = document.getElementById('levelStat');
+                if (levelStat) {
+                    levelStat.textContent = currentLevel;
+                }
+
+                // Update progress bar
+                const progressFill = document.getElementById('progressFill');
+                if (progressFill) {
+                    const progress = (metCount / currentLevel) * 100;
+                    progressFill.style.width = progress + '%';
+                }
+
+                // Check if all current requirements are met
+                if (metCount === currentLevel) {
+                    if (currentLevel < requirements.length) {
+                        setTimeout(function() {
+                            currentLevel++;
+                            showMessage('Level ' + currentLevel + '! New requirement added!', 'success');
+                            updateDisplay();
+                        }, 500);
+                    } else {
+                        showMessage('🎉 Congratulations! You\'ve completed the Password Challenge!', 'success');
+                    }
+                }
+            } catch (error) {
+                console.log('Update error:', error);
             }
         }
 
+        // Show message function
         function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 3000);
+            try {
+                const messageDiv = document.getElementById('message');
+                if (messageDiv) {
+                    messageDiv.textContent = text;
+                    messageDiv.className = 'message ' + type;
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(function() {
+                        messageDiv.style.display = 'none';
+                    }, 3000);
+                }
+            } catch (error) {
+                console.log('Message error:', error);
+            }
         }
 
+        // Reset game function
         function resetGame() {
-            currentLevel = 1;
-            document.getElementById('passwordInput').value = '';
-            password = '';
-            updateDisplay();
+            try {
+                currentLevel = 1;
+                const input = document.getElementById('passwordInput');
+                if (input) {
+                    input.value = '';
+                }
+                password = '';
+                updateDisplay();
+            } catch (error) {
+                console.log('Reset error:', error);
+            }
         }
 
         // Initialize the game
-        document.getElementById('passwordInput').addEventListener('input', updateDisplay);
-        updateDisplay();
-
-        // PWA functionality (simplified for artifact environment)
-        let deferredPrompt;
-        let installButton;
-
-        // Safely handle service worker registration
-        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('SW registered successfully');
-                    })
-                    .catch(error => {
-                        // Silently handle error - normal in artifact environment
-                        console.log('SW not available in this environment');
-                    });
-            });
-        }
-
-        // PWA Install Prompt (with error handling)
-        window.addEventListener('beforeinstallprompt', (e) => {
+        document.addEventListener('DOMContentLoaded', function() {
             try {
-                e.preventDefault();
-                deferredPrompt = e;
-                showInstallButton();
+                const input = document.getElementById('passwordInput');
+                if (input) {
+                    input.addEventListener('input', updateDisplay);
+                }
+                updateDisplay();
             } catch (error) {
-                console.log('Install prompt not available');
+                console.log('Init error:', error);
             }
         });
-
-        function showInstallButton() {
-            try {
-                if (!installButton && document.body) {
-                    installButton = document.createElement('button');
-                    installButton.textContent = '📱 Install App';
-                    installButton.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        right: 20px;
-                        background: rgba(16, 185, 129, 0.9);
-                        color: white;
-                        border: none;
-                        padding: 12px 16px;
-                        border-radius: 8px;
-                        font-size: 14px;
-                        font-weight: 500;
-                        cursor: pointer;
-                        z-index: 1000;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                        transition: all 0.2s ease;
-                    `;
-                    
-                    installButton.addEventListener('click', installApp);
-                    document.body.appendChild(installButton);
-                }
-            } catch (error) {
-                console.log('Could not create install button');
-            }
-        }
-
-        function installApp() {
-            try {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((result) => {
-                        if (result.outcome === 'accepted') {
-                            hideInstallButton();
-                        }
-                        deferredPrompt = null;
-                    }).catch(() => {
-                        // Handle promise rejection silently
-                    });
-                }
-            } catch (error) {
-                console.log('Install prompt failed');
-            }
-        }
-
-        function hideInstallButton() {
-            try {
-                if (installButton && installButton.parentNode) {
-                    installButton.parentNode.removeChild(installButton);
-                    installButton = null;
+    </script>
+</body>
+</html>
               
