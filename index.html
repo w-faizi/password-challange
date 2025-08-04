@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Password Challenge">
+    <meta name="description" content="Progressive password building challenge game">
+    <meta name="keywords" content="password, game, challenge, security, mobile">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons for various devices -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#020617">
+    
+    <title>Password Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #020617;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .password-input {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle 500px at 50% 300px, rgba(16,185,129,0.35), transparent);
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0 4px;
+            }
+            
+            h1 {
+                font-size: 1.875rem;
+                margin-bottom: 32px;
+            }
+            
+            .stats {
+                padding: 12px 16px;
+                margin-bottom: 20px;
+            }
+            
+            .stat-number {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .requirement {
+                padding: 10px 14px;
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+            
+            .password-input {
+                font-size: 16px;
+                padding: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 24px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .stat {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            font-size: 2.25rem;
+            font-weight: 600;
+            letter-spacing: -0.05em;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+            background: linear-gradient(135deg, #ffffff, #e4e4e7, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            border-radius: 1px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+            font-weight: 400;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .password-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+        }
+
+        .requirements {
+            margin-bottom: 20px;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid rgba(239, 68, 68, 0.6);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .requirement.met {
+            background: rgba(34, 197, 94, 0.08);
+            border-left-color: rgba(34, 197, 94, 0.7);
+        }
+
+        .requirement-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .requirement-text {
+            flex: 1;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.4;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .message {
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 0 auto;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .reset-btn:hover, .reset-btn:active {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Touch feedback */
+        .requirement, .password-input, .reset-btn {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Improve touch targets */
+        .requirement {
+            min-height: 44px;
+        }
+
+        .reset-btn {
+            min-height: 44px;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Challenge</h1>
+        
+        <input type="text" class="password-input" id="passwordInput" placeholder="Start typing your password...">
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="lengthStat">0</div>
+                <div class="stat-label">Length</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="requirementsStat">0/1</div>
+                <div class="stat-label">Requirements Met</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="levelStat">1</div>
+                <div class="stat-label">Level</div>
+            </div>
+        </div>
+        
+        <div class="requirements" id="requirements"></div>
+        
+        <div class="message" id="message" style="display: none;"></div>
+        
+        <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+        
+        <div style="text-align: center; margin-top: 24px; opacity: 0.4;">
+            <span style="font-size: 12px; color: rgba(255, 255, 255, 0.6); font-weight: 400;">created by zishan</span>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        let password = '';
+        
+        const requirements = [
+            {
+                id: 'minLength',
+                text: 'Password must be at least 8 characters long',
+                check: (pwd) => pwd.length >= 8
+            },
+            {
+                id: 'uppercase',
+                text: 'Password must contain an uppercase letter',
+                check: (pwd) => /[A-Z]/.test(pwd)
+            },
+            {
+                id: 'lowercase',
+                text: 'Password must contain a lowercase letter',
+                check: (pwd) => /[a-z]/.test(pwd)
+            },
+            {
+                id: 'number',
+                text: 'Password must contain a number',
+                check: (pwd) => /[0-9]/.test(pwd)
+            },
+            {
+                id: 'special',
+                text: 'Password must contain a special character (!@#$%^&*)',
+                check: (pwd) => /[!@#$%^&*]/.test(pwd)
+            },
+            {
+                id: 'noSequence',
+                text: 'Password must not contain 3 consecutive letters (abc, xyz, etc.)',
+                check: (pwd) => {
+                    for (let i = 0; i < pwd.length - 2; i++) {
+                        const char1 = pwd.charCodeAt(i);
+                        const char2 = pwd.charCodeAt(i + 1);
+                        const char3 = pwd.charCodeAt(i + 2);
+                        if (char2 === char1 + 1 && char3 === char2 + 1) return false;
+                    }
+                    return true;
+                }
+            },
+            {
+                id: 'sumDigits',
+                text: 'The digits in your password must add up to 25',
+                check: (pwd) => {
+                    const digits = pwd.match(/\d/g);
+                    if (!digits) return false;
+                    const sum = digits.reduce((acc, digit) => acc + parseInt(digit), 0);
+                    return sum === 25;
+                }
+            },
+            {
+                id: 'monthName',
+                text: 'Password must include the name of a month',
+                check: (pwd) => {
+                    const months = ['january', 'february', 'march', 'april', 'may', 'june', 
+                                  'july', 'august', 'september', 'october', 'november', 'december'];
+                    return months.some(month => pwd.toLowerCase().includes(month));
+                }
+            },
+            {
+                id: 'romanNumeral',
+                text: 'Password must include a Roman numeral',
+                check: (pwd) => /[IVXLCDM]/.test(pwd.toUpperCase())
+            },
+            {
+                id: 'currentYear',
+                text: 'Password must include the current year (2025)',
+                check: (pwd) => pwd.includes('2025')
+            },
+            {
+                id: 'emoji',
+                text: 'Password must contain an emoji 🔒',
+                check: (pwd) => /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(pwd)
+            },
+            {
+                id: 'palindrome',
+                text: 'Password must contain a palindrome of at least 4 characters',
+                check: (pwd) => {
+                    for (let i = 0; i < pwd.length - 3; i++) {
+                        for (let j = i + 4; j <= pwd.length; j++) {
+                            const substr = pwd.slice(i, j);
+                            if (substr === substr.split('').reverse().join('')) return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+        ];
+
+        function updateDisplay() {
+            const input = document.getElementById('passwordInput');
+            password = input.value;
+
+            // Update length stat
+            document.getElementById('lengthStat').textContent = password.length;
+
+            // Calculate current requirements
+            const currentRequirements = requirements.slice(0, currentLevel);
+            let metCount = 0;
+
+            // Clear and rebuild requirements display
+            const requirementsDiv = document.getElementById('requirements');
+            requirementsDiv.innerHTML = '';
+
+            currentRequirements.forEach((req, index) => {
+                const isMet = req.check(password);
+                if (isMet) metCount++;
+
+                const reqDiv = document.createElement('div');
+                reqDiv.className = `requirement ${isMet ? 'met' : ''}`;
+                reqDiv.innerHTML = `
+                    <span class="requirement-icon">${isMet ? '✅' : '❌'}</span>
+                    <span class="requirement-text">${req.text}</span>
+                `;
+                requirementsDiv.appendChild(reqDiv);
+            });
+
+            // Update stats
+            document.getElementById('requirementsStat').textContent = `${metCount}/${currentLevel}`;
+            document.getElementById('levelStat').textContent = currentLevel;
+
+            // Update progress bar
+            const progress = (metCount / currentLevel) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+
+            // Check if all current requirements are met
+            if (metCount === currentLevel) {
+                if (currentLevel < requirements.length) {
+                    setTimeout(() => {
+                        currentLevel++;
+                        showMessage(`Level ${currentLevel}! New requirement added!`, 'success');
+                        updateDisplay();
+                    }, 500);
+                } else {
+                    showMessage('🎉 Congratulations! You\'ve completed the Password Challenge!', 'success');
+                }
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function resetGame() {
+            currentLevel = 1;
+            document.getElementById('passwordInput').value = '';
+            password = '';
+            updateDisplay();
+        }
+
+        // Initialize the game
+        document.getElementById('passwordInput').addEventListener('input', updateDisplay);
+        updateDisplay();
+
+        // PWA functionality (simplified for artifact environment)
+        let deferredPrompt;
+        let installButton;
+
+        // Safely handle service worker registration
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered successfully');
+                    })
+                    .catch(error => {
+                        // Silently handle error - normal in artifact environment
+                        console.log('SW not available in this environment');
+                    });
+            });
+        }
+
+        // PWA Install Prompt (with error handling)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            try {
+                e.preventDefault();
+                deferredPrompt = e;
+                showInstallButton();
+            } catch (error) {
+                console.log('Install prompt not available');
+            }
+        });
+
+        function showInstallButton() {
+            try {
+                if (!installButton && document.body) {
+                    installButton = document.createElement('button');
+                    installButton.textContent = '📱 Install App';
+                    installButton.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        background: rgba(16, 185, 129, 0.9);
+                        color: white;
+                        border: none;
+                        padding: 12px 16px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        z-index: 1000;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                        transition: all 0.2s ease;
+                    `;
+                    
+                    installButton.addEventListener('click', installApp);
+                    document.body.appendChild(installButton);
+                }
+            } catch (error) {
+                console.log('Could not create install button');
+            }
+        }
+
+        function installApp() {
+            try {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((result) => {
+                        if (result.outcome === 'accepted') {
+                            hideInstallButton();
+                        }
+                        deferredPrompt = null;
+                    }).catch(() => {
+                        // Handle promise rejection silently
+                    });
+                }
+            } catch (error) {
+                console.log('Install prompt failed');
+            }
+        }
+
+        function hideInstallButton() {
+            try {
+                if (installButton && installButton.parentNode) {
+                    installButton.parentNode.removeChild(installButton);
+                    installButton = null;
+              
